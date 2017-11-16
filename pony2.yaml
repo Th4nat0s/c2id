@@ -1,0 +1,15 @@
+name: pony 2.2
+root: admin.php, gate.php
+rule:
+  - page: config.php
+    code: 200
+  - page: gate.php
+    code: 404
+  - page: admin.php
+    code: 200
+  - page: 'includes/templates/header.tpl'
+    code: 200
+    contains: '<div class="pony_hdr_text">Pony 2.2</div>'
+  - page: 'includes/design/images/favicon.ico'
+    code: 200
+    hash: b2e87bb6f28663fe5d28dec0d980d4cb
