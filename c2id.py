@@ -100,7 +100,14 @@ def detect(base_uri, root, conf):
                 fscore = analyse(panelcfg['rule'], base_uri)
                 if fscore > 90:
                     print ("* Found %s at %d%%" % (panel, fscore))
-                    break
+                    return()
+    print("- No Root page found, bruteforcing")
+    for panel in conf:
+        panelcfg=conf[panel]
+        fscore = analyse(panelcfg['rule'], base_uri)
+        if fscore > 90:
+            print ("* Found %s at %d%%" % (panel, fscore))
+            break
 
 
 # Main Code #####

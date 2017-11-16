@@ -1,0 +1,6 @@
+name: Agent Tesla (early)
+root: api.php, login.php
+rule:
+  - page: login.php
+    code: 200
+    contains: '<h3>Welcome to Agent Tesla</h3>'
