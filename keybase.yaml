@@ -1,0 +1,8 @@
+name: Keybase
+root: login.php, post.php
+rule:
+  - page: login.php
+    code: 200
+    contains: '<h2> KeyBase: Login</h2>'
+  - page: post.php
+    code: 200

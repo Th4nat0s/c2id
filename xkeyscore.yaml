@@ -1,0 +1,6 @@
+name: Xkeyscore
+root: reports.php
+rule:
+  - page: reports.php
+    code: 200
+    contains: '<b>XKeyScore Control Panel Login</b>'

@@ -12,7 +12,7 @@ import hashlib
 def get(uri):
     # print (uri)
     headers = requests.utils.default_headers()
-    headers.update({'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'})
+    headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko'})
     try:
         r = requests.get(uri, timeout=15, headers=headers)
     except requests.exceptions.MissingSchema:
@@ -53,21 +53,24 @@ def load_conf():
 
 def page2folder(arg):
     """
-    Remove a page from uri
+    Remove a page from an uri
 
     args:
         arg (str) string
     return
-        str
+        str, str
     """
     if arg.endswith("/"):
         return arg, None
     args = arg.split("/")
 
     if "." in args[-1]:
-        return "/".join(args[:-1]) + "/", args[-1]
-    else:
-        return arg + "/", None
+        ext = args[-1].split('.')[1]  # récupère l'extention
+        print (ext)
+        if ext in ['php', 'html', 'pl', 'htm', 'aspx']:
+            print (ext)
+            return "/".join(args[:-1]) + "/", args[-1]
+    return arg + "/", None
 
 
 def analyse(rules, base_uri):
@@ -75,6 +78,7 @@ def analyse(rules, base_uri):
     rscore = 0
     for rule in rules:
         code, raw, body = get(base_uri + rule['page'])
+        # print ("%s %s" % (rule['page'], code))
         if rule.get('code'):
             score += 1  # Increment test count
             if rule.get('code') == code:
@@ -82,12 +86,15 @@ def analyse(rules, base_uri):
         if rule.get('contains'):
             score += 1  # Increment test count
             if rule.get('contains') in body:
+                # print ("match")
                 rscore += 1
         if rule.get('hash'):
             score += 1  # Increment test count
+            # print ("%s %s" % (rule['page'], hashlib.md5(raw).hexdigest()))
             if rule.get('hash') == hashlib.md5(raw).hexdigest():
                 rscore += 1
     fscore = ((rscore / score) * 100)
+    # print (fscore)
     return(fscore)
 
 
@@ -107,7 +114,7 @@ def detect(base_uri, root, conf):
         fscore = analyse(panelcfg['rule'], base_uri)
         if fscore > 90:
             print ("* Found %s at %d%%" % (panel, fscore))
-            break
+            return()
 
 
 # Main Code #####

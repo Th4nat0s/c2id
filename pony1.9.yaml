@@ -1,4 +1,4 @@
-name: pony 2.2
+name: pony 1.9
 root: admin.php, gate.php
 rule:
   - page: config.php
@@ -9,7 +9,7 @@ rule:
     code: 200
   - page: 'includes/templates/header.tpl'
     code: 200
-    contains: '<div class="pony_hdr_text">Pony 2.2'
+    contains: '<div class="pony_hdr_text">Pony 1.9</div>'
   - page: 'includes/design/images/favicon.ico'
     code: 200
     hash: b2e87bb6f28663fe5d28dec0d980d4cb
