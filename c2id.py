@@ -66,9 +66,7 @@ def page2folder(arg):
 
     if "." in args[-1]:
         ext = args[-1].split('.')[1]  # récupère l'extention
-        print (ext)
         if ext in ['php', 'html', 'pl', 'htm', 'aspx']:
-            print (ext)
             return "/".join(args[:-1]) + "/", args[-1]
     return arg + "/", None
 
@@ -84,10 +82,16 @@ def analyse(rules, base_uri):
             if rule.get('code') == code:
                 rscore += 1
         if rule.get('contains'):
-            score += 1  # Increment test count
-            if rule.get('contains') in body:
-                # print ("match")
-                rscore += 1
+            if isinstance(rule.get('contains'), str):
+                score += 1  # Increment test count
+                if rule.get('contains') in body:
+                    # print ("match")
+                    rscore += 1
+            elif isinstance(rule.get('contains'), list):
+                for contain in rule.get('contains'):
+                    score +=1
+                    if contain in body:
+                        rscore +=1
         if rule.get('hash'):
             score += 1  # Increment test count
             # print ("%s %s" % (rule['page'], hashlib.md5(raw).hexdigest()))

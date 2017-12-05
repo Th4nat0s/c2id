@@ -1,0 +1,6 @@
+name: Quant Loader
+root: index.php
+rule:
+  - page: index.php
+    contains: ['CPPGURU Software', '<title>Welcome</title>']
+    code: 200
