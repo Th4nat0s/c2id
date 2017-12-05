@@ -1,0 +1,6 @@
+name: 1mS0rry Miner Panel
+root: index.php
+rule:
+  - page: index.php
+    contains: '<title>1ms0rry MINERPANEL</title>'
+    code: 200

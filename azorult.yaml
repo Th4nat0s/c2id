@@ -1,0 +1,6 @@
+name: Azorult
+root: index.php
+rule:
+  - page: index.php
+    contains: '<input type="submit" value=">>">'
+    code: 200
