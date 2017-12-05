@@ -1,0 +1,11 @@
+name: Agent Tesla
+root: api.php, login.php
+rule:
+  - page: login.php
+    code: 200
+    contains: '<title>Web Panel | Login</title>'
+  - page: api.php
+    code: 200
+  - page: /img/agent-dark-logo.png
+    code: 200
+    hash: d925c5b8a6b6b37e4be9ae381ae3fcf9

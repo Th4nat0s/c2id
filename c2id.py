@@ -66,7 +66,7 @@ def page2folder(arg):
 
     if "." in args[-1]:
         ext = args[-1].split('.')[1]  # récupère l'extention
-        if ext in ['php', 'html', 'pl', 'htm', 'aspx']:
+        if ext.lower() in ['php', 'html', 'pl', 'htm', 'aspx']:
             return "/".join(args[:-1]) + "/", args[-1]
     return arg + "/", None
 

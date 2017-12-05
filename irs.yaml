@@ -1,0 +1,6 @@
+name: IRS
+root: index.php
+rule:
+  - page: index.php
+    contains: ['<title>(c) BOBBYJ</title>', '<strong>Sorting Logs:</strong>']
+    code: 200
