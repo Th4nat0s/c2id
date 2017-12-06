@@ -1,0 +1,17 @@
+name: Diamond Fox
+root: index.php, gate.php
+rule:
+  - page: gate.php
+    code: 404
+  - page: index.php
+    code: 200
+    contains: '<button type="submit" name="login" class="btn btn-primary btn-block btn-large">'
+  - page: 'img/kartoxa1.png'
+    code: 200
+    hash: b1130fca3f502e69f9be98c96c4e3602
+  - page: 'img/flags/ru.gif'
+    code: 200
+    hash: addac471b8ddc26a9f1f2fa235330d80
+  - page: 'img/task.png'
+    code: 200
+    hash: d3dbf29b1772a650fc436d02d0e74d1f
