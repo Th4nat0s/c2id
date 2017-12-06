@@ -8,6 +8,7 @@ from os.path import isfile, join
 import requests
 import hashlib
 
+debug = False
 
 def get(uri):
     # print (uri)
@@ -76,7 +77,8 @@ def analyse(rules, base_uri):
     rscore = 0
     for rule in rules:
         code, raw, body = get(base_uri + rule['page'])
-        # print ("%s %s" % (rule['page'], code))
+        if debug:
+            print ("= Request %s %s" % (rule['page'], code))
         if rule.get('code'):
             score += 1  # Increment test count
             if rule.get('code') == code:
@@ -85,20 +87,25 @@ def analyse(rules, base_uri):
             if isinstance(rule.get('contains'), str):
                 score += 1  # Increment test count
                 if rule.get('contains') in body:
-                    # print ("match")
+                    if debug:
+                        print ("= Contains")
                     rscore += 1
             elif isinstance(rule.get('contains'), list):
                 for contain in rule.get('contains'):
                     score +=1
                     if contain in body:
                         rscore +=1
+                        if debug:
+                            print ("= Contains")
         if rule.get('hash'):
             score += 1  # Increment test count
-            # print ("%s %s" % (rule['page'], hashlib.md5(raw).hexdigest()))
+            if debug:
+                print ("= %s %s" % (rule['page'], hashlib.md5(raw).hexdigest()))
             if rule.get('hash') == hashlib.md5(raw).hexdigest():
                 rscore += 1
     fscore = ((rscore / score) * 100)
-    # print (fscore)
+    if debug:
+        print ('Final score: %d' % fscore)
     return(fscore)
 
 
