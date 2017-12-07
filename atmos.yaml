@@ -1,0 +1,8 @@
+name: Atmos
+root: cp.php
+rule:
+  - page: theme/js/page-botnet_vnc.js
+    code: 200
+  - page: cp.php?m=login
+    contains: Remember (MD5 cookies)
+    code: 200
