@@ -7,11 +7,13 @@ from os import listdir
 from os.path import isfile, join
 import requests
 import hashlib
+import random
+import string
 
 debug = False
 
+
 def get(uri):
-    # print (uri)
     headers = requests.utils.default_headers()
     headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko'})
     try:
@@ -73,17 +75,39 @@ def page2folder(arg):
     return arg + "/", None
 
 
+def get404(base_uri):
+    ''' Fetch a random page to get a 404
+    '''
+    pagerandom = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(16)) + ".html"
+    _, raw404, _ = get(base_uri + pagerandom)
+    return(raw404)
+
+
 def analyse(rules, base_uri):
     score = 0
     rscore = 0
+    raw404 = True   # Init once
+    for rule in rules:
+        if rule.get('code') == 404 and raw404:
+            raw404 = get404(base_uri)
+            if debug:
+                print('Fetch 404')
+            break
+
     for rule in rules:
         code, raw, body = get(base_uri + rule['page'])
         if debug:
             print ("= Request %s %s" % (rule['page'], code))
         if rule.get('code'):
-            score += 1  # Increment test count
+            score += 1  # ncrement test count
             if rule.get('code') == code:
-                rscore += 1
+                if rule.get('code') == 404:
+                    if raw != raw404:
+                        if debug:
+                            print('= Fake404 found')
+                        rscore += 1
+                else:
+                    rscore += 1
         if rule.get('contains'):
             if isinstance(rule.get('contains'), str):
                 score += 1  # Increment test count
