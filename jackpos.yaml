@@ -1,0 +1,6 @@
+name: JackPos
+root: index.php
+rule:
+  - page: index.php
+    contains: '<h1>JackPos</h1>'
+    code: 200
