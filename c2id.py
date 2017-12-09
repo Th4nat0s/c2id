@@ -9,8 +9,73 @@ import requests
 import hashlib
 import random
 import string
+import argparse
+import datetime
+import logging
+from logging.handlers import RotatingFileHandler
 
-debug = False
+version = '0.1.1712'
+gen_config = {}
+gen_config['verbose'] = False
+gen_config['quiet'] = False
+
+
+def debug():
+    if gen_config['verbose']:
+        return(true)
+    return(false)
+
+
+def logger_init(logger):
+    # on met le niveau du logger à DEBUG, comme ça il écrit tout
+    if gen_config['verbose']:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+    # création d'un formateur qui va ajouter le temps, le niveau
+    # de chaque message quand on écrira un message dans le log
+    formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
+    # création d'un handler qui va rediriger une écriture du log vers
+    # un fichier en mode 'append', avec 1 backup et une taille max de 1Mo
+    file_handler = RotatingFileHandler('activity.log', 'a', 1000000, 1)
+    # on lui met le niveau sur DEBUG, on lui dit qu'il doit utiliser le formateur
+    # créé précédement et on ajoute ce handler au logger
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    # création d'un second handler qui va rediriger chaque écriture de log
+    # sur la console
+    if not gen_config['quiet']:
+        steam_handler = logging.StreamHandler()
+        if gen_config['verbose']:
+            steam_handler.setLevel(logging.DEBUG)
+        else:
+            steam_handler.setLevel(logging.INFO)
+            # création d'un formateur qui va ajouter le temps, le niveau
+        steam_handler.setLevel(logging.DEBUG)
+        steam_handler.setFormatter(formatter)
+        logger.addHandler(steam_handler)
+
+
+# Parse les arguments de la ligne de commande, les retourne avec un dictionnaire..
+def parse_arg():
+    parser = argparse.ArgumentParser(description='C2ID v%s (c) Thanat0s 2017-%d'% (version, datetime.datetime.now().year))
+    subparsers = parser.add_subparsers(help='sub-command help', dest='command')
+    parser_s = subparsers.add_parser('seek', help='Identify a CC')
+    parser_c = subparsers.add_parser('candidates', help='Print all candidate pages')
+
+    # Update Mode
+    parser_c.add_argument('-v', '--verbose', action='store_true', help='verbose mode', dest='verbose')
+
+    # Seek Mode
+    parser_s.add_argument('-v', '--verbose', action='store_true', help='verbose mode', dest='verbose')
+    parser_s.add_argument('-u', '--uri', required=True, dest='uri', help='Uri to identify')
+    parser_s.add_argument('-q', '--quiet', action='store_true', help='quiet', dest='quiet')
+
+    args = parser.parse_args()
+    argsdict = vars(args)
+    return(argsdict)
 
 
 def get(uri):
@@ -19,22 +84,11 @@ def get(uri):
     try:
         r = requests.get(uri, timeout=15, headers=headers)
     except requests.exceptions.MissingSchema:
-        print('Warning : Invalid Scheme')
+        logger.error('Invalid Scheme')
         return 000, ""
     except:
         return 000, ""
     return r.status_code, r.content, r.text
-
-
-# Functions
-def getparam(count):
-    """Retrieve the parameters appended """
-    if len(sys.argv) != count + 1:
-        print('C2ID')
-        print('To Use: %s http://suspected_uri' % sys.argv[0])
-        sys.exit(1)
-    else:
-        return sys.argv[1]
 
 
 def load_conf():
@@ -49,8 +103,8 @@ def load_conf():
                 obj=(yaml.load(stream))
                 conf[obj.get('name')] = obj
             except:
-                print("! Yaml syntax error in %s" % conf_file)
-    # print (conf)
+                logger.info("! Yaml syntax error in %s" % conf_file)
+    # logger.debug(conf)
     return(conf)
 
 
@@ -91,20 +145,20 @@ def analyse(rules, base_uri):
         if rule.get('code') == 404 and raw404:
             raw404 = get404(base_uri)
             if debug:
-                print('Fetch 404')
+                logger.debug('Fetched a real 404 page')
             break
 
     for rule in rules:
         code, raw, body = get(base_uri + rule['page'])
         if debug:
-            print ("= Request %s %s" % (rule['page'], code))
+            logger.debug("Requesting %s status code %s" % (rule['page'], code))
         if rule.get('code'):
             score += 1  # ncrement test count
             if rule.get('code') == code:
                 if rule.get('code') == 404:
                     if raw != raw404:
                         if debug:
-                            print('= Fake404 found')
+                            logger.debug('Generated 404 page found')
                         rscore += 1
                 else:
                     rscore += 1
@@ -113,7 +167,7 @@ def analyse(rules, base_uri):
                 score += 1  # Increment test count
                 if rule.get('contains') in body:
                     if debug:
-                        print ("= Contains")
+                        logger.debug("Page contains %s" % rule.get('contains'))
                     rscore += 1
             elif isinstance(rule.get('contains'), list):
                 for contain in rule.get('contains'):
@@ -121,16 +175,16 @@ def analyse(rules, base_uri):
                     if contain in body:
                         rscore +=1
                         if debug:
-                            print ("= Contains")
+                            logger.debug("Page contains %s" % rule.get('contains'))
         if rule.get('hash'):
             score += 1  # Increment test count
             if debug:
-                print ("= %s %s" % (rule['page'], hashlib.md5(raw).hexdigest()))
+                logger.debug("%s match %s" % (rule['page'], hashlib.md5(raw).hexdigest()))
             if rule.get('hash') == hashlib.md5(raw).hexdigest():
                 rscore += 1
     fscore = ((rscore / score) * 100)
     if debug:
-        print ('Final score: %d' % fscore)
+        logger.debug('Final score: %d' % fscore)
     return(fscore)
 
 
@@ -139,31 +193,51 @@ def detect(base_uri, root, conf):
         panelcfg=conf[panel]
         if root:
             if root in panelcfg['root']:
-                print ("- Candidate to %s" % panel)
+                logger.debug("Busting for %s" % panel)
                 fscore = analyse(panelcfg['rule'], base_uri)
                 if fscore > 90:
-                    print ("* Found %s at %d%%" % (panel, fscore))
+                    if 
+                    logger.info("Found %s at %d%%" % (panel, fscore))
                     return()
-    print("- No Root page found, bruteforcing")
+    logger.info("- No Root page found, bruteforcing")
     for panel in conf:
         panelcfg=conf[panel]
         fscore = analyse(panelcfg['rule'], base_uri)
         if fscore > 90:
-            print ("* Found %s at %d%%" % (panel, fscore))
+            logger.info("Found %s at %d%%" % (panel, fscore))
             return()
+
+
+def print_candidates(conf):
+    hashtable = {}
+    for item in conf:
+        for page in (conf[item].get('root')).split(','):
+            page = page.strip()
+            hashtable[page]=page
+    for page in hashtable:
+        print(page)
 
 
 # Main Code #####
 def main():
+    logger.debug("Start")
     conf = load_conf()
-    uri = getparam(1)
-    if not uri.startswith("http"):
-        uri = "http://%s" % uri
-    print("Query on %s" % uri)
-    base_uri, root = page2folder(uri)
-    print("Base Uri %s, Page: %s" % (base_uri, root))
-    result = detect(base_uri, root, conf)
+    if gen_config.get('command') == 'seek':
 
+        # Append default scheme if missing.
+        if not gen_config.get('uri').startswith("http"):
+            uri = "http://%s" % gen_config.get('uri')
+        logger.info("Query on %s" % gen_config.get('uri'))
+        base_uri, root = page2folder(gen_config.get('uri'))
+        logger.debug("Base Uri %s, Page: %s" % (base_uri, root))
+        result = detect(base_uri, root, conf)
+    elif gen_config.get('command') == 'candidates':
+        print_candidates(conf)
+
+
+logger = logging.getLogger()
+gen_config.update(parse_arg())  # Merge config with parameters
+logger_init(logger)
 
 if __name__ == '__main__':
     main()
