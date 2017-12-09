@@ -235,7 +235,7 @@ def main():
 
         # Append default scheme if missing.
         if not gen_config.get('uri').startswith("http"):
-            uri = "http://%s" % gen_config.get('uri')
+            gen_config['uri'] = "http://%s" % gen_config.get('uri')
         logger.info("Query on %s" % gen_config.get('uri'))
         base_uri, root = page2folder(gen_config.get('uri'))
         logger.debug("Base Uri %s, Page: %s" % (base_uri, root))
