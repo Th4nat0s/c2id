@@ -1,0 +1,6 @@
+name: HawkEye
+root: login.php
+rule:
+  - page: login.php
+    contains: <p>HawkEye</p>
+    code: 200
