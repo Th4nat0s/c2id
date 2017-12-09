@@ -38,6 +38,9 @@ def logger_init(logger):
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
+
+    # Reset urllogger to debug level
+    logging.getLogger("requests").setLevel(logging.DEBUG)
     # création d'un formateur qui va ajouter le temps, le niveau
     # de chaque message quand on écrira un message dans le log
     formatter = logging.Formatter('%(asctime)s :: %(levelname)s :: %(message)s')
@@ -91,9 +94,9 @@ def get(uri):
         r = requests.get(uri, timeout=15, headers=headers)
     except requests.exceptions.MissingSchema:
         logger.error('Invalid Scheme')
-        return 000, ""
+        return 000, byte(""), ""
     except:
-        return 000, ""
+        return 000, byte(""), ""
     return r.status_code, r.content, r.text
 
 
@@ -155,6 +158,8 @@ def analyse(rules, base_uri):
             break
 
     for rule in rules:
+        print (base_uri)
+
         code, raw, body = get(base_uri + rule['page'])
         if debug:
             logger.debug("Requesting %s status code %s" % (rule['page'], code))
@@ -252,6 +257,8 @@ def main():
 logger = logging.getLogger()
 gen_config.update(parse_arg())  # Merge config with parameters
 logger_init(logger)
+logging.getLogger("requests").setLevel(logging.DEBUG)
+
 
 if __name__ == '__main__':
     main()
