@@ -1,5 +1,5 @@
-name: Atmos (Zeus/Citadel)
-root: cp.php
+name: Zeus/Citadel
+root: cp.php, webmaster.php
 rule:
   - page: theme/js/page-botnet_vnc.js
     code: 200
