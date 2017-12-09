@@ -22,8 +22,14 @@ gen_config['quiet'] = False
 
 def debug():
     if gen_config['verbose']:
-        return(true)
-    return(false)
+        return(rue)
+    return(False)
+
+
+def quiet():
+    if gen_config['quiet']:
+        return(True)
+    return(False)
 
 
 def logger_init(logger):
@@ -189,6 +195,7 @@ def analyse(rules, base_uri):
 
 
 def detect(base_uri, root, conf):
+    highscore = {}
     for panel in conf:
         panelcfg=conf[panel]
         if root:
@@ -196,16 +203,18 @@ def detect(base_uri, root, conf):
                 logger.debug("Busting for %s" % panel)
                 fscore = analyse(panelcfg['rule'], base_uri)
                 if fscore > 90:
-                    if 
-                    logger.info("Found %s at %d%%" % (panel, fscore))
-                    return()
-    logger.info("- No Root page found, bruteforcing")
+                    return(panel, fscore)
+                highscore[panel] = fscore
+    logger.info("No Root page found, bruteforcing")
     for panel in conf:
         panelcfg=conf[panel]
         fscore = analyse(panelcfg['rule'], base_uri)
         if fscore > 90:
-            logger.info("Found %s at %d%%" % (panel, fscore))
-            return()
+            return(panel, fscore)
+        highscore[panel] = fscore
+
+    best = sorted(highscore, key=highscore.__getitem__, reverse=True)[0]
+    return(best, highscore[best])
 
 
 def print_candidates(conf):
@@ -230,7 +239,12 @@ def main():
         logger.info("Query on %s" % gen_config.get('uri'))
         base_uri, root = page2folder(gen_config.get('uri'))
         logger.debug("Base Uri %s, Page: %s" % (base_uri, root))
-        result = detect(base_uri, root, conf)
+        result, score = detect(base_uri, root, conf)
+        if quiet():
+            print("Found %s at %d%%" % (result, score))
+        else:
+            logger.info("Found %s at %d%%" % (result, score))
+
     elif gen_config.get('command') == 'candidates':
         print_candidates(conf)
 
