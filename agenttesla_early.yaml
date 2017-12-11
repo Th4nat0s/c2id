@@ -1,5 +1,5 @@
 name: Agent Tesla (early)
-root: api.php, login.php
+root: post.php, login.php
 rule:
   - page: login.php
     code: 200
