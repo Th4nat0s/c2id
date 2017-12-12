@@ -1,4 +1,5 @@
 name: Agent Tesla
+desc: Stealer
 root: api.php, login.php
 rule:
   - page: login.php

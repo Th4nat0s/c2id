@@ -1,4 +1,5 @@
 name: JackPos
+desc: Pos Malware
 root: index.php
 rule:
   - page: index.php

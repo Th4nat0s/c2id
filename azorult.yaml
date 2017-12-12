@@ -1,5 +1,5 @@
 name: Azorult
-root: index.php
+root: index.php post.php
 rule:
   - page: index.php
     contains: '<input type="submit" value=">>">'
