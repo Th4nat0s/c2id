@@ -158,8 +158,6 @@ def analyse(rules, base_uri):
             break
 
     for rule in rules:
-        print (base_uri)
-
         code, raw, body = get(base_uri + rule['page'])
         if debug:
             logger.debug("Requesting %s status code %s" % (rule['page'], code))
@@ -256,9 +254,9 @@ def main():
 
 logger = logging.getLogger()
 gen_config.update(parse_arg())  # Merge config with parameters
+logging.getLogger("requests").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 logger_init(logger)
-logging.getLogger("requests").setLevel(logging.DEBUG)
-
 
 if __name__ == '__main__':
     main()
