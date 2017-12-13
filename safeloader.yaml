@@ -1,0 +1,11 @@
+name: Safe Loader panel
+desc: Stealer
+root: index.php, gate.php
+rule:
+  - page: index.php
+    contains: '<title>ASPC'
+    code: 200
+  - page: gate.php
+    code: 200
+  - page: /images/flags/er.png
+    code: 200
