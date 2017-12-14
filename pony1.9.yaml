@@ -1,10 +1,11 @@
 name: pony 1.9
 root: admin.php, gate.php
+desc: stealer
 rule:
   - page: config.php
     code: 200
   - page: gate.php
-    code: 404
+    code: 200
   - page: admin.php
     code: 200
   - page: 'includes/templates/header.tpl'
