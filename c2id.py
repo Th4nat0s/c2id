@@ -94,9 +94,10 @@ def get(uri):
         r = requests.get(uri, timeout=15, headers=headers)
     except requests.exceptions.MissingSchema:
         logger.error('Invalid Scheme')
-        return 000, byte(""), ""
+        return 000, bytes("".encode('utf8')), ""
     except:
-        return 000, byte(""), ""
+        return 000, bytes("".encode('utf8')), ""
+        logger.error('Unknown error when fetching')
     return r.status_code, r.content, r.text
 
 

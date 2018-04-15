@@ -1,0 +1,11 @@
+name: Zemra DDOS Panel
+root: index.php
+comment: https://www.youtube.com/watch?v=22hKgbnh7XI
+rule:
+  - page: index.php
+    contains: '<title>Zemra Live (Administration)</title>'
+    code: 200
+  - page: '/resources/images/favicon.ico'
+    code: 200
+    hash: '6c01a35af11f36f6ea196aa66ca47323'
+
