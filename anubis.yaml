@@ -1,0 +1,11 @@
+name: Anubis
+root: login.php
+rule:
+  - page: login.php
+    contains: ['action="login_data.php" method="post">', '<title>Login</title>'] 
+    code: 200
+  - page: login_data.php
+    code: 200
+  - page: '/images/icon1.png'
+    code: 200
+    hash: 226108288ae2cbe086c02b73f24a4fdf
