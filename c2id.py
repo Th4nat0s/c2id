@@ -14,7 +14,7 @@ import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 
-version = '0.1.1712'
+version = '0.2.1906'
 gen_config = {}
 gen_config['verbose'] = False
 gen_config['quiet'] = False
@@ -172,6 +172,7 @@ def analyse(rules, base_uri):
                         rscore += 1
                 else:
                     rscore += 1
+        # Check string comparaison
         if rule.get('contains'):
             if isinstance(rule.get('contains'), str):
                 score += 1  # Increment test count
@@ -181,11 +182,11 @@ def analyse(rules, base_uri):
                     rscore += 1
             elif isinstance(rule.get('contains'), list):
                 for contain in rule.get('contains'):
-                    score +=1
+                    score += 1
                     if contain in body:
                         rscore +=1
                         if debug:
-                            logger.debug("Page contains %s" % rule.get('contains'))
+                            logger.debug("Page contains %s" % contain)
         if rule.get('hash'):
             score += 1  # Increment test count
             if debug:
