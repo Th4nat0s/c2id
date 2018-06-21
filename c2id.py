@@ -14,7 +14,7 @@ import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 
-version = '0.2.1906'
+version = '0.2.2006'
 gen_config = {}
 gen_config['verbose'] = False
 gen_config['quiet'] = False
@@ -231,13 +231,14 @@ def print_candidates(conf):
     for page in hashtable:
         print(page)
 
+def print_help(conf):
+    print('Use -h for help')
 
 # Main Code #####
 def main():
     logger.debug("Start")
     conf = load_conf()
     if gen_config.get('command') == 'seek':
-
         # Append default scheme if missing.
         if not gen_config.get('uri').startswith("http"):
             gen_config['uri'] = "http://%s" % gen_config.get('uri')
@@ -252,7 +253,10 @@ def main():
 
     elif gen_config.get('command') == 'candidates':
         print_candidates(conf)
+    elif gen_config.get('command') is None:
+        print_help(conf)
 
+# Begin of code
 
 logger = logging.getLogger()
 gen_config.update(parse_arg())  # Merge config with parameters
