@@ -1,0 +1,10 @@
+name: Racoon 3000
+root: login.php
+note: https://www.virustotal.com/#/file/c18838690a2dc6b1f226ab3bdd4b581ab81968192140142d23f8117162861546
+rule:
+  - page: /style/favicon.ico
+    code: 200
+    hash: c8e618fb902988bcdf5deba4f514a758
+  - page: login.php
+    code: 200
+    contains: "<title>Racoon3000</title>"
