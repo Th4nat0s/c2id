@@ -1,0 +1,16 @@
+name: FlexNet (Android Bot)
+root: index.php, controller.php
+rule:
+  - page: help.php
+    contains: ["Flexnet: help"]
+    code: 200
+  - page: index.php
+    contains: ["selectedSmsPanelVisible", "imitationSms"]
+    code: 200
+  - page: controller.php
+    code: 200
+  - page: css/ratchet-theme-desctop.css
+    code: 200
+  - page: css/img/waiting.gif
+    md5: 8ee858e1855773d7e6f2115cae4d69b1
+    code: 200
